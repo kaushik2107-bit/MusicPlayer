@@ -92,7 +92,7 @@ app.post('/tracks', (req, res) => {
 
 // get objectId from filename string
 
-const url = "https://music-player-mern.vercel.app/"
+const url = "https://music-player-c3g1.onrender.com/"
 app.get('/api/:fileName', async (req, res) => {
   try {
     let fileName = req.params.fileName
