@@ -135,6 +135,32 @@ app.get('/api/:fileName', async (req, res) => {
   }
 })
 
+app.get('/latest', async(req, res) => {
+  try {
+    const result = await db.collection('image.files').find().limit(5).toArray()
+    const result2 = await db.collection('tracks.files').find().limit(5).toArray()
+
+    let image_ids = []
+    let file_name = []
+    result.map((item) => {
+      image_ids.push(url + "images/" + item._id.toString())
+    })
+
+    result.map((item) => {
+      file_name.push(item.filename)
+    })
+
+    let track_ids = []
+    result2.map((item) => {
+      track_ids.push(url + "tracks/" + item._id.toString())
+    })
+
+    return res.status(200).send({message: "Successfully Done", image_id: image_ids, track_id: track_ids, file_name: file_name})
+  } catch (err) {
+    return res.status(500).send({message: "Internal Server Error"})
+  }
+})
+
 // get route of a song
 app.get('/tracks/:trackID', (req, res) => {
   try {
