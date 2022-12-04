@@ -17,20 +17,17 @@ const ObjectID = require('mongodb').ObjectID
 // connecting to the database
 let db
 let db2
-const connection = async () => {
-  await MongoClient.connect(process.env['MONGODB_URI'], {useUnifiedTopology: true, useNewUrlParser: true}, (err, client) => {
-    if (err) {
-      console.log(err)
-      process.exit(1)
-    }
+MongoClient.connect(process.env.DB || process.env['MONGODB_URI'], {useUnifiedTopology: true, useNewUrlParser: true}, (err, client) => {
+  if (err) {
+    console.log(err)
+    process.exit(1)
+  }
 
-    db = client.db('musicplayer')
-    db2 = client.db('userInfo')
-    console.log("Database Connected Successfully")
-  })
-}
+  db = client.db('musicplayer')
+  db2 = client.db('userInfo')
+  console.log("Database Connected Successfully")
+})
 
-connection()
 
 // post route of  a song
 app.post('/tracks', (req, res) => {
@@ -142,7 +139,6 @@ app.get('/api/:fileName', async (req, res) => {
 })
 
 app.get('/latest', async(req, res) => {
-  connection()
   try {
     const result = await db.collection('image.files').find().limit(5).toArray()
     const result2 = await db.collection('tracks.files').find().limit(5).toArray()
