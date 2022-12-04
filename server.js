@@ -17,7 +17,7 @@ const ObjectID = require('mongodb').ObjectID
 // connecting to the database
 let db
 let db2
-MongoClient.connect(process.env.DB, (err, client) => {
+MongoClient.connect(process.env.DB, {useUnifiedTopology: true, useNewUrlParser: true}, (err, client) => {
   if (err) {
     console.log(err)
     process.exit(1)
