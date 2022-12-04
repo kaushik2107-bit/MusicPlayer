@@ -19,6 +19,7 @@ let db
 let db2
 MongoClient.connect(process.env.DB, {useUnifiedTopology: true, useNewUrlParser: true}, (err, client) => {
   if (err) {
+    console.log(process.env.DB)
     console.log(err)
     process.exit(1)
   }
