@@ -360,4 +360,44 @@ app.post("/fetchlike", async(req, res) => {
   }
 })
 
+// add a playlist
+app.post("/addplaylist", async(req, res) => {
+  try {
+    const check = await db2.collection('data').find({email: req.body.email, playlists: {$elemMatch: {name: req.body.name}}}).toArray()
+    if (check.length) {
+      return res.status(202).send({message: "Playlist with same name exist"})
+    }
+
+    await db2.collection('data').updateOne(
+      {
+        email: req.body.email
+      },
+      {
+        $addToSet: {
+          playlists: {
+            name: req.body.name,
+            cover: req.body.cover,
+            songs: req.body.songs
+          }
+        }
+      }
+    )
+    return res.status(200).send({message: "Playlist added"})
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({message: "Internal Server Error"})
+  }
+})
+
+app.post("/fetchplaylist", async(req, res) => {
+  try {
+    const result = await db2.collection("data").find({email: req.body.email}).toArray()
+
+    return res.status(200).send({message: "Ok", data: result[0].playlists})
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({message: "Internal Server Error"})
+  }
+})
+
 app.listen(PORT, () => console.log('Connected Successfully!', PORT))
