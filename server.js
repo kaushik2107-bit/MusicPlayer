@@ -18,7 +18,7 @@ const ObjectID = require('mongodb').ObjectID
 let db
 let db2
 const connection = async () => {
-  await MongoClient.connect(process.env.DB || process.env['MONGODB_URI'], {useUnifiedTopology: true, useNewUrlParser: true}, (err, client) => {
+  await MongoClient.connect(process.env['MONGODB_URI'], {useUnifiedTopology: true, useNewUrlParser: true}, (err, client) => {
     if (err) {
       console.log(err)
       process.exit(1)
