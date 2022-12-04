@@ -141,6 +141,7 @@ app.get('/api/:fileName', async (req, res) => {
 
 app.get('/latest', async(req, res) => {
   try {
+    console.log(db)
     const result = await db.collection('image.files').find().limit(5).toArray()
     const result2 = await db.collection('tracks.files').find().limit(5).toArray()
 
