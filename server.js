@@ -272,4 +272,92 @@ app.post('/register', async (req, res) =>{
 })
 
 
+// setLike
+app.post("/setlike", async(req, res) => {
+  try {
+    const { file, image, track } = req.body
+    console.log(req.body)
+    await db2.collection('data').updateOne(
+      {
+        email: req.body.email
+      },
+      {
+        $addToSet: {
+          likedSongs: {
+            fileName: file,
+            image: image,
+            track: track
+          }
+        }
+      }
+    )
+
+    return res.status(201).send({message: "Added to your liked songs"})
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({message: "Internal Server Error"})
+  }
+})
+
+// removeLike
+app.post("/removelike", async(req, res) => {
+  try {
+    const { file, image, track } = req.body
+    console.log(req.body)
+    await db2.collection('data').updateOne(
+      {
+        email: req.body.email
+      },
+      {
+        $pull: {
+          likedSongs: {
+            fileName: file,
+            image: image,
+            track: track
+          }
+        }
+      }
+    )
+
+    return res.status(201).send({message: "Added to your liked songs"})
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({message: "Internal Server Error"})
+  }
+})
+
+// check if the song is liked or not
+app.post("/islike", async(req, res) => {
+  try {
+    const { email, file, image, track } = req.body
+    const result = await db2.collection("data").find({email: email}).toArray()
+
+    let data = false
+    for (item of result[0].likedSongs) {
+      if (item.fileName === file && item.image === image && item.track === track) {
+        data = true
+        break
+      }
+    }
+
+    return res.status(202).send({message: "Ok", check: data})
+
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({message: "Internal Server Error"})
+  }
+})
+
+// fetch all liked songs
+app.post("/fetchlike", async(req, res) => {
+  try {
+    const result = await db2.collection("data").find({email: req.body.email}).toArray()
+
+    return res.status(200).send({message: "Liked Songs found", data: result[0].likedSongs})
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({message: "Internal Server Error"})
+  }
+})
+
 app.listen(PORT, () => console.log('Connected Successfully!', PORT))
