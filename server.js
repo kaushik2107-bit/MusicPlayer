@@ -1,4 +1,5 @@
 require('dotenv').config()
+const axios = require('axios')
 const express = require('express')
 const cors = require('cors')
 const multer = require('multer')
@@ -15,6 +16,7 @@ const ObjectID = require('mongodb').ObjectID
 
 // connecting to the database
 let db
+let db2
 MongoClient.connect(process.env.DB, (err, client) => {
   if (err) {
     console.log(err)
@@ -22,6 +24,7 @@ MongoClient.connect(process.env.DB, (err, client) => {
   }
 
   db = client.db('musicplayer')
+  db2 = client.db('userInfo')
   console.log("Database Connected Successfully")
 })
 
@@ -219,6 +222,53 @@ app.get('/images/:trackID', (req, res) => {
   downloadStream.on('end', () => {
     res.end()
   })
+})
+
+// Check if user exist
+app.post('/api/findUser', async (req, res) => {
+  try {
+    const result = await db2.collection('data').find({email: req.body.email}).toArray()
+    console.log(result)
+    if (result.length) {
+      return res.status(202).send({message: "User found"})
+    }
+    return res.status(200).send({message: "User not found"})
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({message: "Internal Server Error"})
+  }
+})
+
+
+// User registration
+app.post('/register', async (req, res) =>{
+  try {
+    const { email, name, profilePic } = req.body
+    console.log(req.body)
+    db2.collection('data').updateOne(
+      {
+        email: email
+      },
+      {
+        $setOnInsert: {
+          email: email,
+          name: name,
+          profilePic: profilePic,
+          likedSongs: [],
+          playlists: []
+        }
+      },
+      {
+        upsert: true
+      }
+    )
+
+    res.status(201).send({message: "Ok"})
+
+  } catch (err) {
+    console.log(err)
+    res.status(500).send({message: "Internal Server Error"})
+  }
 })
 
 
