@@ -389,6 +389,7 @@ app.post("/addplaylist", async(req, res) => {
   }
 })
 
+// fetch playlist
 app.post("/fetchplaylist", async(req, res) => {
   try {
     const result = await db2.collection("data").find({email: req.body.email}).toArray()
